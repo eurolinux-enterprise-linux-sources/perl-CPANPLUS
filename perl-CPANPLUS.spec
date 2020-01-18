@@ -2,12 +2,14 @@
 Name:           perl-CPANPLUS
 # Keep 2-digit major varion to compete with perl.spec for history
 Version:        %(echo '%{cpan_version}' | sed 's/\(\...\)/\1./')
-Release:        2%{?dist}
+Release:        4%{?dist}
 Summary:        Ameliorated interface to the Comprehensive Perl Archive Network
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/CPANPLUS/
 Source0:        http://www.cpan.org/authors/id/B/BI/BINGOS/CPANPLUS-%{cpan_version}.tar.gz
+# Do not download 03modlist.data.gz, bug #1035782, CPAN RT#91273, in 0.9144
+Patch0:         CPANPLUS-0.9142-RT-91273-Useless-downloading-03modlist.data.gz.patch
 BuildArch:      noarch
 BuildRequires:  perl
 BuildRequires:  perl(Config)
@@ -89,6 +91,7 @@ interactive shells, command line programs, etc., that use this API.
 
 %prep
 %setup -q -n CPANPLUS-%{cpan_version}
+%patch0 -p1
 # Remove bundled modules
 %if !%{defined perl_bootstrap}
 rm -rf inc
@@ -120,6 +123,12 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 0.91.38-4
+- Mass rebuild 2013-12-27
+
+* Wed Dec 11 2013 Petr Pisar <ppisar@redhat.com> - 0.91.38-3
+- Do not download 03modlist.data.gz (bug #1035782)
+
 * Fri Jul 12 2013 Petr Pisar <ppisar@redhat.com> - 0.91.38-2
 - Specify all dependencies
 

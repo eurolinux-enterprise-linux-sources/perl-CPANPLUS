@@ -1,0 +1,57 @@
+From 68f75c070e1c77a63164a8d127ea775d0ddb62dc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Petr=20P=C3=ADsa=C5=99?= <ppisar@redhat.com>
+Date: Mon, 9 Dec 2013 19:52:01 +0000
+Subject: [PATCH] [RT#91273] Useless downloading 03modlist.data.gz
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Since 0.9136, dslip source 03modlist.data.gz is not parsed, so it's pointless to download it:
+
+sub __create_dslip_tree {
+    my $self = shift;
+    my %hash = @_;
+    my $conf = $self->configure_object;
+
+    return {}; # Quick hack
+    [...]
+}
+
+Attached patch disables downloading 03modlist.data.gz.
+
+Signed-off-by: Chris 'BinGOs' Williams <chris@bingosnet.co.uk>
+Signed-off-by: Petr Písař <ppisar@redhat.com>
+---
+ lib/CPANPLUS/Internals/Source.pm | 2 +-
+ t/03_CPANPLUS-Internals-Source.t | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lib/CPANPLUS/Internals/Source.pm b/lib/CPANPLUS/Internals/Source.pm
+index f43dca5..05b9394 100644
+--- a/lib/CPANPLUS/Internals/Source.pm
++++ b/lib/CPANPLUS/Internals/Source.pm
+@@ -307,7 +307,7 @@ sub _check_trees {
+ 
+     my $uptodate = 1; # default return value
+ 
+-    for my $name (qw[auth dslip mod]) {
++    for my $name (qw[auth mod]) {
+         for my $file ( $conf->_get_source( $name ) ) {
+             $self->__check_uptodate(
+                 file            => File::Spec->catfile( $path, $file ),
+diff --git a/t/03_CPANPLUS-Internals-Source.t b/t/03_CPANPLUS-Internals-Source.t
+index d6ad2ea..1acc48d 100644
+--- a/t/03_CPANPLUS-Internals-Source.t
++++ b/t/03_CPANPLUS-Internals-Source.t
+@@ -35,7 +35,7 @@ my $modname = TEST_CONF_MODULE;
+     my $at      = $cb->_author_tree;
+ 
+     ### source files should be copied from the 'server' now
+-    for my $name (qw[auth mod dslip] ) {
++    for my $name (qw[auth mod] ) {
+         my $file = File::Spec->catfile(
+                             $conf->get_conf('base'),
+                             $conf->_get_source($name)
+-- 
+1.8.3.1
+
